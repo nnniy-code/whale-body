@@ -3387,3 +3387,73 @@ collisions: [{'label': '手叉腰', 'fingerprints': [两个]}]
 
 ---
 
+
+## 2026-11-27 · v1.9：runtime 接上全身（走 + 挥同时动）
+
+![走 + 挥](docs/images/runtime_walk_wave_full.png)
+
+### 修的是什么
+
+v1.8 的 `handle_composite` 里，base 和叠加层的数据类型不一致：
+
+| 函数 | 返回 |
+|---|---|
+| `pose_for_from_P`（旧） | **世界矩阵** |
+| `build_full`（新） | **basis** |
+
+`merge_layers` 不校验语义，混着合并 → 位置全 0。
+
+### 改法（接口统一成 basis）
+
+```python
+# v1.8
+def pose_for_from_P(...):
+    return self.rig_fast.compute(basis)      # 世界矩阵
+
+# v1.9
+def pose_for_from_P(...):
+    return self.basis_for_from_P(P, family, side)   # basis
+```
+
+`pose_for` 保留 `as_basis=False` 默认（兼容 `apply_pose`）：
+
+```python
+def pose_for(self, entry, side=None, as_basis=False):
+    basis = pose_gen.build(P, self.rig_fast, self.bm, active_side=side)
+    return basis if as_basis else self.rig_fast.compute(basis)
+```
+
+`handle_composite` 的 base 改走全身装配：
+
+```python
+if self._full_body:
+    base_basis, _d = self.build_full(P_base, family, t, active_side=side)
+```
+
+### 实测
+
+```
+sources ['L2', 'L2']  layers 1  full_body True
+hand_z 0.917（挥）    foot_z 0.170（抬脚）
+body BodyState(x=0.000, y=-0.167, bob=0.0104, vel=0.32)
+```
+
+**右手在挥、左腿在走路、身体在前进**——三件事同时发生。
+
+### 测试
+
+```
+tests/test_composite.py   PASS（merged hand_z 0.906, foot_z 0.080）
+全量 45 个测试              0 失败
+```
+
+### 教训
+
+**同一个项目里，同一个概念只能有一种表示。**
+
+basis 和世界矩阵都是 4×4、都能做矩阵乘、都不报错——**这种「类型不同但结构相同」的混淆最难查**。
+
+**规则**：函数名或 docstring 里必须写明「返回 basis」还是「返回世界矩阵」。
+
+---
+
