@@ -102,9 +102,11 @@ def main() -> int:
     lz3, rz3, _ = feet(mk(), "idle")
     check("idle 双脚等高", abs(lz3 - rz3) < 0.005, f"{abs(lz3-rz3)*1000:.1f}mm")
 
-    print("[6] 只有这两族声明了 lift")
+    print("[6] 只有这三族声明了 lift")
     owners = sorted(k for k, v in fams.items() if (v.get("G") or {}).get("lift"))
-    check("只有 lift_leg_left/right", owners == ["lift_leg_left", "lift_leg_right"], str(owners))
+    # tiptoe 也是靠 lift 实现的（双脚各抬 4cm），不是单脚抬
+    check("只有 lift_leg_left/right + tiptoe",
+          owners == ["lift_leg_left", "lift_leg_right", "tiptoe"], str(owners))
 
     print("-" * 52)
     if FAILS:
