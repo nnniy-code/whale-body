@@ -1,16 +1,16 @@
-"""core/body_state.py — 角色在世界里的移动状态。
+"""core/body_state.py — 角色在世界里的移动状态 + 姿态保持（v2.1）。
 
-设计依据：DEVLOG 2026-11-25「D 的设计」
+设计依据：DEVLOG 2026-11-25/27「D 的设计」「姿态保持」
 
-**职责分离**（这是 D 的核心）：
+**职责分离**：
     动作（walk/run）  → 只写 vel / turn_rate
     BodyState.step()  → 积分出 x/y/yaw，算 bob
     姿态层（pose_gen + ik）→ **只读**，不写
 
-为什么不让动作直接摆 hips：
-    走路/跑步/转身/被推，改的都是「身体在世界里的位置」，
-    而所有动作（挥/点头/歪头）都挂在这个位置上面。
-    位置不属于任何一个动作，属于角色本身。
+**姿态保持（v2.1）**：
+    用户要求「默认保持当前姿势，说『回待机』才重置」。
+    注意：腿的状态（hip_drop / foot_source）也在 State 里，
+    因为 P 只描述上半身，蹲下的 hip_drop 不在 P 里。
 """
 
 from __future__ import annotations
@@ -21,8 +21,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class BodyState:
-    """角色的世界状态（只有移动相关的量）。"""
+    """角色的世界状态（移动 + 姿态保持）。"""
 
+    # ---- 移动 ----
     x: float = 0.0            # 世界 x（米）
     y: float = 0.0            # 世界 y（米）
     yaw: float = 0.0          # 朝向（度，0 = 朝 -Y）
@@ -33,6 +34,11 @@ class BodyState:
     # 内部：累计走过的距离（算 bob 相位用）
     _dist: float = field(default=0.0, repr=False)
 
+    # ---- 姿态保持（v2.1）----
+    P_hold: dict = field(default_factory=dict)   # 上半身 12 维
+    hip_drop_hold: float = 0.0                    # 腿：髋降
+    foot_source_hold: str = "static"              # 腿：脚目标源
+
     # 步态参数（由动作设置，默认走路）
     stride: float = 0.5
     bob_amp: float = 0.012
@@ -41,29 +47,54 @@ class BodyState:
         """按当前 vel / turn_rate 前进一个时间步。"""
         if dt <= 0:
             return
-        # 朝向先转（这样这一帧的前进方向用的是新朝向）
         self.yaw = (self.yaw + self.turn_rate * dt) % 360.0
-        # 前进
         v = float(self.vel)
         if abs(v) > 1e-9:
             rad = math.radians(self.yaw)
-            # 朝向 0 = -Y，顺时针为正
             fx = math.sin(rad)
             fy = -math.cos(rad)
             self.x += fx * v * dt
             self.y += fy * v * dt
             self._dist += abs(v) * dt
-            # 重心起伏：一个步态周期两次（左右脚各一次）
             phase = self._dist / max(1e-6, self.stride)
             self.bob = math.sin(2.0 * math.pi * phase) * self.bob_amp
         else:
             self.bob *= 0.85      # 停下时渐渐不浮
 
+    # ---- 重置 ----
     def reset(self) -> None:
+        """全重置（位置 + 姿态）。"""
         self.x = self.y = self.yaw = 0.0
         self.bob = self.vel = self.turn_rate = 0.0
         self._dist = 0.0
+        self.reset_pose()
 
+    def reset_pose(self) -> None:
+        """只重置姿态（**保留位置**）。
+
+        用户要求：回待机不瞬移回原点。
+        """
+        self.P_hold = {}
+        self.hip_drop_hold = 0.0
+        self.foot_source_hold = "static"
+
+    # ---- 姿态保持 ----
+    def hold_pose(self, P: dict, hip_drop: float = 0.0,
+                  foot_source: str = "static") -> None:
+        """记下要保持的姿态。"""
+        self.P_hold = dict(P or {})
+        self.hip_drop_hold = float(hip_drop)
+        self.foot_source_hold = str(foot_source)
+
+    def has_pose(self) -> bool:
+        return bool(self.P_hold)
+
+    def pose_dict(self) -> dict:
+        return {"P_hold": len(self.P_hold),
+                "hip_drop_hold": round(self.hip_drop_hold, 3),
+                "foot_source_hold": self.foot_source_hold}
+
+    # ---- 工具 ----
     def offset(self) -> tuple[float, float, float]:
         """姿态层平移 hips 用的偏移（世界坐标）。"""
         return (self.x, self.y, self.bob)
@@ -75,8 +106,10 @@ class BodyState:
     def as_dict(self) -> dict:
         return {"x": round(self.x, 4), "y": round(self.y, 4),
                 "yaw": round(self.yaw, 2), "bob": round(self.bob, 4),
-                "vel": round(self.vel, 3), "turn_rate": round(self.turn_rate, 2)}
+                "vel": round(self.vel, 3), "turn_rate": round(self.turn_rate, 2),
+                **self.pose_dict()}
 
     def __repr__(self) -> str:
         return (f"BodyState(x={self.x:.3f}, y={self.y:.3f}, yaw={self.yaw:.1f}, "
-                f"bob={self.bob:.4f}, vel={self.vel:.2f})")
+                f"bob={self.bob:.4f}, vel={self.vel:.2f}, "
+                f"pose={'有' if self.has_pose() else '无'})")

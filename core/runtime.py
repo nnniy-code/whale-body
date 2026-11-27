@@ -112,6 +112,15 @@ class Runtime:
         predicates = act.get("predicates") or []
         side = _infer_side(predicates)
 
+        # v2.1：回待机（强制重置姿态，**保留位置**）
+        if family_name in ("reset", "stand_up", "reset_pose", "idle_reset"):
+            self.reset_pose()
+            if self.log:
+                self.log.emit("pose_reset", trace_id=trace_id)
+            return {"entry": None, "source": "reset", "capability_gap": None,
+                    "reset": True,
+                    "message": "", "body": self.body.as_dict()}
+
         # 2.5 谓词来源：**族有模板时模板优先**
         # 用户 2026-11-24 定的：解决「谓词膨胀」——LLM 只决定用哪个族，
         # 细谓词由模板给（模板是验证过的）。LLM 给的 predicates 只在
@@ -610,9 +619,10 @@ class Runtime:
 
         fam = self.families.get(act.get("intent") or "") or {}
         P_end = dict(r.get("play_P") or r["entry"].params.get("P") or {})
-        # 起点优先级：显式传入 > 上次姿态 > **中立站姿（idle）**
-        # 不用目标族的 P_default —— 那是「终点附近」的姿态，不是起点
+        # 起点优先级：显式传入 > 上次姿态 > **保持的姿态** > 中立站姿（idle）
+        # 用户 2026-11-27 定的：默认保持当前姿势，说「回待机」才重置。
         P_start = dict(start_P or self._last_P
+                       or self.body.P_hold
                        or ((self.families.get("idle") or {}).get("P_default") or {}))
         side = (r["entry"].metrics or {}).get("side")
 
@@ -630,9 +640,30 @@ class Runtime:
         return tr
 
     def commit_trajectory(self, tr: dict) -> None:
-        """播完之后把终点记为「当前姿态」，下次规划从这里出发。"""
+        """播完之后：记住终点 P（**含腿的状态**），下次从这里出发。
+
+        v2.1：默认保持——不说「回待机」就一直保持这个姿势。
+        """
         if tr.get("play_P"):
             self._last_P = dict(tr["play_P"])
+            hip_drop = 0.0
+            if self.foot_target is not None:
+                hip_drop = float(self.foot_target.hip_drop())
+            self.body.hold_pose(tr["play_P"], hip_drop,
+                                getattr(self.body, "foot_source_hold", "static"))
+
+    def reset_pose(self) -> None:
+        """回到待机：清空姿态，**保留位置**。"""
+        self._last_P = None
+        self.body.reset_pose()
+
+    def explain(self, r: dict) -> str:
+        """把结果转成给用户看的一句话（失败原因 / 无）。"""
+        from core.explain import explain_trajectory
+        if "frames" in (r or {}):
+            return r.get("message") or explain_trajectory(r)
+        from core.explain import explain_gap
+        return explain_gap((r or {}).get("capability_gap"))
 
     def trajectory_basis(self, tr: dict, family_name: str, t: float = 0.0,
                          active_side: str | None = None) -> list[dict]:
