@@ -610,6 +610,11 @@ class Runtime:
         from core.trajectory_solver import solve_path
 
         r = self.handle_intent(act, now=time.perf_counter())
+        # v2.2：reset 不是「做不出来」，是主动清空姿态
+        if r.get("reset"):
+            return {"frames": [], "mode": "reset", "entry": None,
+                    "gaps": [], "message": "", "reset": True,
+                    "body": r.get("body")}
         if not r.get("entry"):
             from core.explain import explain_gap
             gaps = [r["capability_gap"]] if r.get("capability_gap") else []

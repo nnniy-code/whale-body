@@ -925,7 +925,7 @@
         "turn_rate": 0,
         "phase_offset": 0.5,
         "footfall": "fixed",
-        "hip_drop": 0.25
+        "hip_drop": 0.26
       },
       "P_default": {
         "lean": 0,
@@ -1030,7 +1030,7 @@
         "turn_rate": 0,
         "phase_offset": 0.5,
         "footfall": "fixed",
-        "hip_drop": 0.35
+        "hip_drop": 0.34
       },
       "P_default": {
         "lean": 8,
@@ -1134,7 +1134,8 @@
         "knee_bias": 20,
         "turn_rate": 0,
         "phase_offset": 0.5,
-        "footfall": "fixed"
+        "footfall": "fixed",
+        "hip_drop": 0.22
       },
       "P_default": {
         "lean": -12,
@@ -1720,7 +1721,7 @@
         "turn_rate": 0,
         "phase_offset": 0.5,
         "footfall": "alternate",
-        "hip_drop": 0.32
+        "hip_drop": 0.38
       }
     },
     "tail_wag": {
@@ -1930,7 +1931,7 @@
         "turn_rate": 0,
         "phase_offset": 0.5,
         "footfall": "fixed",
-        "hip_drop": 0.0,
+        "hip_drop": 0.02,
         "lift": {
           "left": 0.22
         }
@@ -2022,7 +2023,7 @@
         "turn_rate": 0,
         "phase_offset": 0.5,
         "footfall": "fixed",
-        "hip_drop": 0.0,
+        "hip_drop": 0.02,
         "lift": {
           "right": 0.22
         }
@@ -2189,6 +2190,198 @@
         "torso_upright"
       ],
       "two_handed": true
+    },
+    "crouch": {
+      "label": "蹲下",
+      "thresholds": {},
+      "predicates_hint": [
+        "torso_upright",
+        "knee_angle"
+      ],
+      "predicates_template": [
+        {
+          "name": "torso_upright",
+          "args": {
+            "max_deg": 30
+          }
+        }
+      ],
+      "P_range": {
+        "lean": [
+          -5,
+          5
+        ],
+        "side_bend": [
+          -6,
+          6
+        ],
+        "head_nod": [
+          -8,
+          8
+        ],
+        "head_tilt": [
+          -10,
+          10
+        ],
+        "head_yaw": [
+          -15,
+          15
+        ],
+        "arm_swing": [
+          0,
+          12
+        ],
+        "arm_lift": [
+          -5,
+          15
+        ],
+        "elbow_bend": [
+          10,
+          140
+        ],
+        "hand_bias": [
+          -10,
+          10
+        ],
+        "tail_curl": [
+          -15,
+          15
+        ],
+        "arm_roll": [
+          -90,
+          90
+        ],
+        "wrist_bend": [
+          -45,
+          45
+        ]
+      },
+      "P_default": {
+        "lean": 0,
+        "side_bend": 0,
+        "head_nod": 0,
+        "head_tilt": 0,
+        "head_yaw": 0,
+        "arm_swing": 5,
+        "arm_lift": 5,
+        "elbow_bend": 12,
+        "hand_bias": 0,
+        "tail_curl": 0,
+        "arm_roll": 0.0,
+        "wrist_bend": 0.0
+      },
+      "G": {
+        "duty": 0.5,
+        "period": 1.0,
+        "stride": 0.0,
+        "foot_lift": 0.02,
+        "stance_width": 0.16,
+        "landing_height": 0.0,
+        "ankle_bias": 0,
+        "knee_bias": 0,
+        "turn_rate": 0,
+        "phase_offset": 0.5,
+        "footfall": "alternate",
+        "hip_drop": 0.2
+      }
+    },
+    "tiptoe": {
+      "label": "踮脚",
+      "thresholds": {},
+      "predicates_hint": [
+        "torso_upright",
+        "knee_angle"
+      ],
+      "predicates_template": [
+        {
+          "name": "torso_upright",
+          "args": {
+            "max_deg": 30
+          }
+        }
+      ],
+      "P_range": {
+        "lean": [
+          -5,
+          5
+        ],
+        "side_bend": [
+          -6,
+          6
+        ],
+        "head_nod": [
+          -8,
+          8
+        ],
+        "head_tilt": [
+          -10,
+          10
+        ],
+        "head_yaw": [
+          -15,
+          15
+        ],
+        "arm_swing": [
+          0,
+          12
+        ],
+        "arm_lift": [
+          -5,
+          15
+        ],
+        "elbow_bend": [
+          10,
+          140
+        ],
+        "hand_bias": [
+          -10,
+          10
+        ],
+        "tail_curl": [
+          -15,
+          15
+        ],
+        "arm_roll": [
+          -90,
+          90
+        ],
+        "wrist_bend": [
+          -45,
+          45
+        ]
+      },
+      "P_default": {
+        "lean": 0,
+        "side_bend": 0,
+        "head_nod": 0,
+        "head_tilt": 0,
+        "head_yaw": 0,
+        "arm_swing": 5,
+        "arm_lift": 5,
+        "elbow_bend": 12,
+        "hand_bias": 0,
+        "tail_curl": 0,
+        "arm_roll": 0.0,
+        "wrist_bend": 0.0
+      },
+      "G": {
+        "duty": 0.5,
+        "period": 1.0,
+        "stride": 0.0,
+        "foot_lift": 0.02,
+        "stance_width": 0.16,
+        "landing_height": 0.0,
+        "ankle_bias": 0,
+        "knee_bias": 0,
+        "turn_rate": 0,
+        "phase_offset": 0.5,
+        "footfall": "alternate",
+        "hip_drop": 0.0,
+        "lift": {
+          "left": 0.04,
+          "right": 0.04
+        }
+      }
     }
   }
 }
