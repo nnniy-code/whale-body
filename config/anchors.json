@@ -1,0 +1,76 @@
+{
+ "v": 1,
+ "rig": "C:\\Users\\LENOVO\\Documents\\deepseek-harness\\default-workspace\\rig_demo\\deepseek_rigged.blend",
+ "points": {
+  "mouth": {
+   "bone": "head",
+   "offset_m": [
+    0.021393,
+    0.001953,
+    -0.001945
+   ],
+   "source": "calibrated",
+   "confidence": 0.75
+  },
+  "chin": {
+   "bone": "head",
+   "offset_m": [
+    0.021952,
+    -0.01607,
+    -0.001996
+   ],
+   "source": "calibrated",
+   "confidence": 0.7
+  },
+  "head_top": {
+   "bone": "mixamorig:HeadTop_End",
+   "offset_m": [
+    0,
+    0,
+    0
+   ],
+   "source": "bone",
+   "confidence": 1.0
+  },
+  "tail_tip": {
+   "bone": "WhaleTail_04",
+   "offset_m": [
+    0,
+    0,
+    0
+   ],
+   "source": "bone",
+   "confidence": 1.0
+  },
+  "hand_center.L": {
+   "bone": "leftHand",
+   "offset_m": [
+    0,
+    0,
+    0
+   ],
+   "source": "bone",
+   "confidence": 1.0
+  },
+  "hand_center.R": {
+   "bone": "rightHand",
+   "offset_m": [
+    0,
+    0,
+    0
+   ],
+   "source": "bone",
+   "confidence": 1.0
+  }
+ },
+ "directions": {
+  "gaze": {
+   "bone": "head",
+   "axis": "forward",
+   "dist_m": 1.0
+  }
+ },
+ "calibrated_at": "2026-11-24T00:33:00+08:00",
+ "fk_checksum": "pending-bones-map",
+ "note": "mouth/chin 由 face 材质穿透射线标定（rest 姿态）；其余直接用骨骼"
+}

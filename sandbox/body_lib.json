@@ -1,0 +1,34 @@
+{
+ "跑": {
+  "action": "run",
+  "params": {
+   "step": 0.24,
+   "lean": 17,
+   "arm": 26
+  },
+  "at": 1794828624.2586017,
+  "used": 0
+ },
+ "窝着": {
+  "action": "gesture",
+  "params": {
+   "squat": 1.0,
+   "hands": {
+    "left": "hip",
+    "right": "hip"
+   },
+   "head": {
+    "nod": -15
+   },
+   "lean": "forward"
+  },
+  "at": 1794891542.297298,
+  "used": 1
+ },
+ "甩尾": {
+  "action": "idle",
+  "params": {},
+  "at": 1794908454.255268,
+  "used": 0
+ }
+}

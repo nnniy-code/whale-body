@@ -1,0 +1,78 @@
+{
+  "v": 1,
+  "note": "REGION 两两的合法接触深度。未列出的走 default。hair|head 用 'delta' 模式（相对静止姿态的增量）。",
+  "regions": [
+    "arm",
+    "body",
+    "hair",
+    "head",
+    "leg",
+    "ribbon",
+    "skirt",
+    "tail"
+  ],
+  "pairs": {
+    "arm|body": {
+      "allowed_mm": 22
+    },
+    "arm|hair": {
+      "allowed_mm": 45
+    },
+    "arm|head": {
+      "allowed_mm": 45
+    },
+    "arm|leg": {
+      "allowed_mm": 18
+    },
+    "arm|skirt": {
+      "allowed_mm": 2
+    },
+    "arm|tail": {
+      "allowed_mm": 20
+    },
+    "body|hair": {
+      "allowed_mm": 3
+    },
+    "body|head": {
+      "allowed_mm": 0
+    },
+    "body|ribbon": {
+      "allowed_mm": 2
+    },
+    "body|skirt": {
+      "allowed_mm": 8
+    },
+    "body|tail": {
+      "allowed_mm": 4
+    },
+    "hair|head": {
+      "allowed_mm": 3,
+      "mode": "delta"
+    },
+    "hair|skirt": {
+      "allowed_mm": 0
+    },
+    "head|skirt": {
+      "allowed_mm": 0
+    },
+    "head|tail": {
+      "allowed_mm": 0
+    },
+    "leg|leg": {
+      "allowed_mm": 2
+    },
+    "leg|skirt": {
+      "allowed_mm": 8
+    },
+    "leg|tail": {
+      "allowed_mm": 0
+    },
+    "skirt|tail": {
+      "allowed_mm": 0
+    }
+  },
+  "default": {
+    "allowed_mm": 2
+  },
+  "baseline": {}
+}

@@ -1,0 +1,1 @@
+{"squat": 0.0, "hip_drop_mm": 0.6, "arm_down": 0.0, "elbow_deg": 0.0, "lean_fwd_deg": 0.0, "side_deg": 0.0, "head_tilt_deg": -15.4, "head_nod_deg": -2.0, "hands": {"left": {"near": "hip", "dist_mm": 23.0}, "right": {"near": "down", "dist_mm": 74.0}}, "ts": 1794910954.0509498}

@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# 运行时数据（每次跑都会变，不该进版本）
+config/library.json
+logs/
+*.jsonl
+
+# 备份 / 大文件
+backups/
+*.zip
+*.blend1
+*.blend2
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+
+# 历史代码备份
+.backup/

@@ -1,0 +1,205 @@
+[
+  {
+    "family": "idle",
+    "predicates": [
+      "hand_below_waist",
+      "torso_upright"
+    ],
+    "converged": true,
+    "evals": 23,
+    "ms": 31.7,
+    "problems": []
+  },
+  {
+    "family": "wave",
+    "predicates": [
+      "hand_near_anchor",
+      "elbow_angle",
+      "forearm_upright",
+      "arm_not_crossed",
+      "hand_outside_body"
+    ],
+    "converged": true,
+    "evals": 46,
+    "ms": 20.4,
+    "problems": []
+  },
+  {
+    "family": "pat_head",
+    "predicates": [
+      "hand_near_anchor",
+      "elbow_angle",
+      "arm_not_crossed"
+    ],
+    "converged": true,
+    "evals": 24,
+    "ms": 11.4,
+    "problems": []
+  },
+  {
+    "family": "point",
+    "predicates": [
+      "hand_near_anchor",
+      "elbow_angle",
+      "hand_outside_body"
+    ],
+    "converged": true,
+    "evals": 90,
+    "ms": 31.1,
+    "problems": []
+  },
+  {
+    "family": "stretch",
+    "predicates": [
+      "hand_near_anchor",
+      "elbow_angle",
+      "torso_lean"
+    ],
+    "converged": true,
+    "evals": 24,
+    "ms": 11.2,
+    "problems": []
+  },
+  {
+    "family": "talk",
+    "predicates": [
+      "hand_above_shoulder",
+      "elbow_angle",
+      "arm_not_crossed"
+    ],
+    "converged": true,
+    "evals": 112,
+    "ms": 41.8,
+    "problems": []
+  },
+  {
+    "family": "walk",
+    "predicates": [
+      "foot_grounded",
+      "torso_upright"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 9.5,
+    "problems": []
+  },
+  {
+    "family": "run",
+    "predicates": [
+      "torso_lean",
+      "hand_below_waist"
+    ],
+    "converged": true,
+    "evals": 166,
+    "ms": 59.4,
+    "problems": []
+  },
+  {
+    "family": "sit",
+    "predicates": [
+      "foot_grounded",
+      "torso_lean"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 7.5,
+    "problems": []
+  },
+  {
+    "family": "kneel",
+    "predicates": [
+      "foot_grounded",
+      "torso_lean"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 7.2,
+    "problems": []
+  },
+  {
+    "family": "rest",
+    "predicates": [
+      "hand_below_waist",
+      "torso_upright"
+    ],
+    "converged": true,
+    "evals": 56,
+    "ms": 22.9,
+    "problems": []
+  },
+  {
+    "family": "spin",
+    "predicates": [
+      "torso_upright"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 7.6,
+    "problems": []
+  },
+  {
+    "family": "free",
+    "predicates": [
+      "torso_upright",
+      "no_ground_penetration"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 7.0,
+    "problems": []
+  },
+  {
+    "family": "lean_in",
+    "predicates": [
+      "torso_lean",
+      "head_nod"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 7.4,
+    "problems": []
+  },
+  {
+    "family": "tail_drop",
+    "predicates": [
+      "head_nod",
+      "torso_upright"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 8.2,
+    "problems": []
+  },
+  {
+    "family": "lie_down",
+    "predicates": [
+      "torso_lean",
+      "hand_below_waist"
+    ],
+    "converged": true,
+    "evals": 34,
+    "ms": 14.3,
+    "problems": []
+  },
+  {
+    "family": "tail_wag",
+    "predicates": [
+      "torso_upright",
+      "head_tilt"
+    ],
+    "converged": true,
+    "evals": 12,
+    "ms": 7.8,
+    "problems": []
+  },
+  {
+    "family": "head_tilt_fam",
+    "predicates": [
+      "head_tilt"
+    ],
+    "converged": true,
+    "evals": 210,
+    "ms": 79.3,
+    "problems": []
+  }
+]

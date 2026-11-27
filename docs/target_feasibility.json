@@ -1,0 +1,58 @@
+[
+  {
+    "outside_mm": 100,
+    "elbow_tol": 50,
+    "converged": true,
+    "evals": 431,
+    "hand_x_mm": -183.4
+  },
+  {
+    "outside_mm": 100,
+    "elbow_tol": 80,
+    "converged": false,
+    "evals": 277,
+    "hand_x_mm": null
+  },
+  {
+    "outside_mm": 130,
+    "elbow_tol": 50,
+    "converged": false,
+    "evals": 1201,
+    "hand_x_mm": null
+  },
+  {
+    "outside_mm": 130,
+    "elbow_tol": 80,
+    "converged": false,
+    "evals": 277,
+    "hand_x_mm": null
+  },
+  {
+    "outside_mm": 160,
+    "elbow_tol": 50,
+    "converged": false,
+    "evals": 1201,
+    "hand_x_mm": null
+  },
+  {
+    "outside_mm": 160,
+    "elbow_tol": 80,
+    "converged": false,
+    "evals": 277,
+    "hand_x_mm": null
+  },
+  {
+    "outside_mm": 190,
+    "elbow_tol": 50,
+    "converged": false,
+    "evals": 1201,
+    "hand_x_mm": null
+  },
+  {
+    "outside_mm": 190,
+    "elbow_tol": 80,
+    "converged": false,
+    "evals": 1201,
+    "hand_x_mm": null
+  }
+]

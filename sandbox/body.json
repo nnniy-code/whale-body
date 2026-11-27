@@ -1,0 +1,20 @@
+{
+ "ts": 1794910953.8507545,
+ "client": "blender",
+ "actions": [
+  "apose",
+  "gesture",
+  "idle",
+  "kneel",
+  "point",
+  "rest",
+  "run",
+  "sit",
+  "spin",
+  "stretch",
+  "talk",
+  "walk",
+  "wave",
+  "custom"
+ ]
+}

@@ -1,0 +1,55 @@
+{
+  "reference": {
+    "hand": [
+      -0.23,
+      -0.145,
+      0.944
+    ],
+    "elbow": [
+      -0.182,
+      -0.1,
+      0.847
+    ],
+    "shoulder": [
+      -0.014,
+      -0.068,
+      0.783
+    ],
+    "hand_z_mm": 943.8,
+    "elbow_z_mm": 846.8,
+    "hand_x_mm": -229.6,
+    "elbow_angle_deg": 137.2
+  },
+  "predicates": [
+    {
+      "name": "hand_above_shoulder",
+      "args": {
+        "side": "right"
+      }
+    },
+    {
+      "name": "hand_elbow_gap",
+      "args": {
+        "side": "right",
+        "min_mm": 85
+      }
+    },
+    {
+      "name": "elbow_angle",
+      "args": {
+        "side": "right",
+        "min_deg": 117.19999999999999,
+        "max_deg": 157.2
+      }
+    },
+    {
+      "name": "arm_not_crossed",
+      "args": {
+        "side": "right"
+      }
+    }
+  ],
+  "converged": true,
+  "evals": 112,
+  "violations": []
+}

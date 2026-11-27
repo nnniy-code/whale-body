@@ -1,0 +1,35 @@
+{
+  "v": 1,
+  "note": "四轴值域 0-100，50 为中性。k 为系数，按参数范围的比例偏移，单个 k 截断到 ±0.15。",
+  "global_k_max": 0.15,
+  "tau_s": 1.0,
+  "axes": {
+    "val": {
+      "lean": 0.12,
+      "head_nod": 0.10,
+      "arm_swing": 0.08,
+      "tail_curl": 0.15,
+      "period": -0.06
+    },
+    "aro": {
+      "arm_swing": 0.15,
+      "head_nod": 0.10,
+      "foot_lift": 0.10,
+      "period": -0.12,
+      "breath_rate": 0.15
+    },
+    "close": {
+      "head_yaw": 0.12,
+      "arm_lift": -0.08,
+      "stance_width": -0.06
+    },
+    "guard": {
+      "side_bend": 0.10,
+      "arm_lift": 0.12,
+      "lean": -0.08,
+      "stance_width": 0.08,
+      "turn_rate": 0.10
+    }
+  },
+  "forbidden": ["targets", "anchors", "duty", "stride"]
+}

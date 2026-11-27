@@ -1,0 +1,21 @@
+{
+ "action": "gesture",
+ "mood": "",
+ "seq": 432,
+ "at": 1794910627.481445,
+ "until": 0.0,
+ "fade": 0.5,
+ "params": {
+  "hands": {
+   "left": "hip"
+  },
+  "head": {
+   "nod": -8,
+   "tilt": 6
+  },
+  "tail_curl": 1,
+  "ease": "snap",
+  "dur": 0.3,
+  "hold": 0.5
+ }
+}

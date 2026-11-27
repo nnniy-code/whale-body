@@ -1,0 +1,13 @@
+{
+ "life": true,
+ "proactive": true,
+ "life_start": "08:00",
+ "life_end": "24:00",
+ "life_every_h": 2,
+ "proactive_max": 8,
+ "rotate_after": 60,
+ "rotate_idle_h": 12,
+ "look_screen": true,
+ "look_camera": true,
+ "voice": true
+}

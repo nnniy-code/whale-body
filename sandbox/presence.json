@@ -1,0 +1,46 @@
+{
+ "idle": 160.5,
+ "exe": "deepseek harness.exe",
+ "events": [
+  {
+   "at": "20:50",
+   "kind": "window",
+   "text": "他把窗口切到了 r5apex_dx12"
+  },
+  {
+   "at": "13:54",
+   "kind": "window",
+   "text": "他把窗口切到了 文件管理器"
+  },
+  {
+   "at": "13:59",
+   "kind": "window",
+   "text": "他把窗口切到了 DeepSeek Harness"
+  },
+  {
+   "at": "14:02",
+   "kind": "window",
+   "text": "他把窗口切到了 legionzone"
+  },
+  {
+   "at": "14:07",
+   "kind": "window",
+   "text": "他把窗口切到了 文件管理器"
+  },
+  {
+   "at": "14:10",
+   "kind": "window",
+   "text": "他把窗口切到了 DeepSeek Harness"
+  }
+ ],
+ "last_emit": 1794911037.275205,
+ "pending_exe": "electron.exe",
+ "pending_since": 1794982281.028208,
+ "idle_state": "idle",
+ "last_sight": {
+  "at": "11-17 12:51",
+  "ts": 1794891079.5049343,
+  "exe": "",
+  "text": "你这一屏窗口里还夹着我的名字呢。忙成这样，难怪半天都不往右下角看一眼。……累了就歇会儿，别硬撑。\n\n[[voice]]"
+ }
+}

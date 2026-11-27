@@ -1,0 +1,296 @@
+[
+  {
+    "family": "idle",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 32.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "wave",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 384.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "pat_head",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 496.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "point",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 356.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "stretch",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 482.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "talk",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 224.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "walk",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 1.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "run",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 205.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "sit",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 1.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "kneel",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 60.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "rest",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 50.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "spin",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 1.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "free",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 2.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "lean_in",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 4.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "tail_drop",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 2.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "lie_down",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 66.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "tail_wag",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 2.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "head_tilt_fam",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 136.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "lift_leg_left",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 57.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "lift_leg_right",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 57.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  },
+  {
+    "family": "arms_out",
+    "converged": true,
+    "capsules": 0,
+    "elbow_rev": false,
+    "knee_rev": false,
+    "foot_low": false,
+    "balance_mm": 20.0,
+    "sym_mm": 3.0,
+    "ankle_z": [
+      0.08,
+      0.08
+    ]
+  }
+]
