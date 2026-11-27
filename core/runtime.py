@@ -73,6 +73,7 @@ class Runtime:
         self._lock_side = None       # 支撑脚（脚锁的锚）
         self._lock_world = None      # 支撑脚锁定的世界 xy
         self._full_body = True       # 是否用全身装配（上半身 + 腿 IK）
+        self._last_P: dict | None = None   # 当前姿态的 P（轨迹规划的起点）
         self._last_full_diag: dict = {}
 
         # 动作混合状态（200ms 惯性化）
@@ -589,8 +590,60 @@ class Runtime:
         basis = pose_gen.build(P, self.rig_fast, self.bm, active_side=side)
         return basis if as_basis else self.rig_fast.compute(basis)
 
+    # ---- v2.0：起点 → 终点的轨迹求解 ----
+    def plan_trajectory(self, act: dict, n_frames: int = 20,
+                        start_P: dict | None = None) -> dict:
+        """对一个动作规划完整轨迹（起点 = 当前姿态，终点 = 求解结果）。
+
+        返回 `solve_path` 的结果，额外带 `entry` / `play_P` / `source`。
+        **不改变** `self._last_P`，播完再调 `commit_trajectory()`。
+        """
+        from core.trajectory_solver import solve_path
+
+        r = self.handle_intent(act, now=time.perf_counter())
+        if not r.get("entry"):
+            return {"frames": [], "mode": "no_entry", "entry": None,
+                    "gaps": [r.get("capability_gap")] if r.get("capability_gap") else []}
+
+        fam = self.families.get(act.get("intent") or "") or {}
+        P_end = dict(r.get("play_P") or r["entry"].params.get("P") or {})
+        # 起点优先级：显式传入 > 上次姿态 > **中立站姿（idle）**
+        # 不用目标族的 P_default —— 那是「终点附近」的姿态，不是起点
+        P_start = dict(start_P or self._last_P
+                       or ((self.families.get("idle") or {}).get("P_default") or {}))
+        side = (r["entry"].metrics or {}).get("side")
+
+        tr = solve_path(
+            P_start, P_end, n_frames=n_frames, rig=self.rig_fast, bm=self.bm,
+            side=side, anchors_cfg=self.anchors_cfg,
+            caps=self.capsules, tab=self.collision_table,
+            lengths=self.lengths, base=self.capsule_baseline,
+            only=self.capsule_only,
+        )
+        tr["entry"] = r["entry"]
+        tr["play_P"] = P_end
+        tr["source"] = r.get("source")
+        tr["intent"] = act.get("intent")
+        return tr
+
+    def commit_trajectory(self, tr: dict) -> None:
+        """播完之后把终点记为「当前姿态」，下次规划从这里出发。"""
+        if tr.get("play_P"):
+            self._last_P = dict(tr["play_P"])
+
+    def trajectory_basis(self, tr: dict, family_name: str, t: float = 0.0,
+                         active_side: str | None = None) -> list[dict]:
+        """把轨迹的每帧 P 转成 basis（可逐帧 apply_basis）。"""
+        out = []
+        for P in tr.get("frames") or []:
+            b, _d = self.build_full(P, family_name, t, active_side=active_side)
+            out.append(b)
+        return out
+
     def frame_for(self, entry) -> Frame:
         return make_frame(self.pose_for(entry), self.anchors_cfg)
+
+
 
 
 

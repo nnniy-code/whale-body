@@ -3457,3 +3457,99 @@ basis 和世界矩阵都是 4×4、都能做矩阵乘、都不报错——**这�
 
 ---
 
+
+## 2026-11-27 · v2.0：起点→终点的轨迹求解（新动作也有过程了）
+
+![轨迹中间帧](docs/images/trajectory_mid_frame.png)
+
+**第 10 帧手臂举到一半** —— 不是瞬间到位。
+
+### 先测了一个关键数据
+
+**直线插值到底撞不撞？**（`tools/probe_straight_path.py`）
+
+```
+wave / point / pat_head / sit / lie_down / tail_drop / head_tilt   OK（7 个）
+stretch                                                            撞 1 帧
+```
+
+**87.5% 的动作直线插值就合法。**
+
+**所以不需要通用路径规划**（RRT/轨迹优化），只需要「检测 + 局部修正」。
+
+### `core/trajectory_solver.py`
+
+```
+① 先检终点：违规就二分缩放（P_end = lerp(P_start, P_end, k)）
+② 直线采样 20 帧（ease 曲线，两端慢中间快）
+③ 逐帧检测（胶囊 + 反关节 + 膝角）
+④ 有撞的帧 → 二分找最大合法进度 → 替换
+```
+
+**成本**：
+
+| 情况 | 耗时 |
+|---|---|
+| 无撞（87.5%） | 60ms（20 帧检测） |
+| 有撞 | 60-90ms（+ 二分） |
+
+**这是一次性规划**，不是每帧。
+
+### `Runtime` 新接口
+
+```python
+tr = rt.plan_trajectory({"intent": "wave"}, n_frames=20)
+# tr["frames"]     20 个 P
+# tr["mode"]       straight / repaired / failed
+# tr["cost_ms"]    规划耗时
+# tr["play_P"]     终点 P
+
+for P in tr["frames"]:
+    b, _ = rt.build_full(P, "wave", 0.0, active_side=side)
+    apply_basis(arm, b)
+
+rt.commit_trajectory(tr)    # 记住终点，下次从这里出发
+```
+
+**起点优先级**：显式传入 > 上次姿态 > **idle 站姿**。
+
+**不用目标族的 `P_default`** —— 那是「终点附近」的姿态，不是起点。
+
+### 实测
+
+```
+mode=straight frames=20 cost=64.7ms
+第 10 帧 arm_lift=55.3  hand_z=0.771（举到一半）
+末帧     arm_lift=114.4 hand_z≈0.97（举高）
+```
+
+### 接进 runtime 的测试（`tests/test_trajectory_runtime.py`）
+
+```
+[2] 挥手 20 帧全程合法         ✅ mode=straight
+[3] 首帧 = idle 站姿           ✅
+    末帧 = 终点 P              ✅
+[4] trajectory_basis 生成 20 个 ✅
+[5] commit_trajectory 记住终点 ✅
+[6] 第二个动作从上次终点出发    ✅
+[7] 没族时返回 no_entry        ✅
+```
+
+**46 个测试全绿。**
+
+### 这解决什么、不解决什么
+
+**解决了**：
+- **新动作也有过程**（从当前姿态平滑过渡到求解结果）
+- 不需要给每个动作手写关键帧
+- 过渡保证不穿模、不反关节
+
+**没解决**：
+- **周期性**（挥手 3 下还是做不到 —— 那是「来回」，不是「从A到B」）
+- **多段串联**（摆3下→转身→再摆）
+- **有接触约束**（手撑桌子时不能随便插值）
+
+**下一层**（如果要做周期）：在终点附近叠正弦振荡，或接 `gestures` 的关键帧。
+
+---
+
