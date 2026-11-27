@@ -602,8 +602,11 @@ class Runtime:
 
         r = self.handle_intent(act, now=time.perf_counter())
         if not r.get("entry"):
+            from core.explain import explain_gap
+            gaps = [r["capability_gap"]] if r.get("capability_gap") else []
             return {"frames": [], "mode": "no_entry", "entry": None,
-                    "gaps": [r.get("capability_gap")] if r.get("capability_gap") else []}
+                    "gaps": gaps,
+                    "message": explain_gap(gaps[0]) if gaps else "这个动作我做不出来。"}
 
         fam = self.families.get(act.get("intent") or "") or {}
         P_end = dict(r.get("play_P") or r["entry"].params.get("P") or {})
@@ -642,6 +645,8 @@ class Runtime:
 
     def frame_for(self, entry) -> Frame:
         return make_frame(self.pose_for(entry), self.anchors_cfg)
+
+
 
 
 
