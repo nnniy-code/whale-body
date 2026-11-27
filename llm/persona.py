@@ -355,6 +355,15 @@ INSTRUCTION_ACTS = {
     "歪头": {"intent": "idle", "predicates": [
         {"name": "head_tilt", "args": {"deg": 15, "tol_deg": 6}},
     ]},
+    # ---- v2.1：回待机（强制重置姿态，保留位置）----
+    "回待机": {"intent": "reset", "predicates": []},
+    "回到待机": {"intent": "reset", "predicates": []},
+    "待机": {"intent": "reset", "predicates": []},
+    "站起来": {"intent": "reset", "predicates": []},
+    "站直": {"intent": "reset", "predicates": []},
+    "正常一点": {"intent": "reset", "predicates": []},
+    "恢复原样": {"intent": "reset", "predicates": []},
+    "别端着": {"intent": "reset", "predicates": []},
 }
 
 
@@ -635,6 +644,16 @@ PARSE_SYSTEM = """你是一个动作解析器。只看两件事：用户说了�
   `{{"intent":"free","predicates":[{{"name":"hand_near_anchor","args":{{"anchor":"head_side","side":"right","tol_mm":80}}}}]}}
 - `predicates` 只在 `intent="free"` 时才给；其他族不用写
 - `dur_s` 可以不写（默认 1.6 秒）；只有动作明显更长/更短时才给
+- **回待机**：用户说「回待机 / 回到待机 / 站起来 / 站直 / 正常一点 / 恢复原样 / 别端着」
+  → `{{"intent":"reset"}}`。这会把姿势清空（位置保留），用来结束累积的动作。
+
+**微动作不累计**（重要）
+- 用户在**闲聊**，她话里带的小动作（尾巴甩一下 / 歪一下头 / 抿嘴 / 低头 / 耳朵动）
+  → `intents` 给 `[]`，**不要**给 intent
+- 只因为她的话里**顺带描写**了身体，不代表用户要看那个动作
+- 只有**用户明确要求**做动作（「挥挥手」「站过来」「蹲下」「手举起来」）
+  或她**明确宣告**要做（「我给你跳一个」）时，才给 intent
+- 判断标准：**这个动作是不是这一轮的重点？** 是闲聊的调味 → `[]`
 
 **可用族**：{families}
 

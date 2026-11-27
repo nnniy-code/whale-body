@@ -3627,3 +3627,60 @@ rt.explain(result)                            # 失败原因（人话）
 
 ---
 
+
+## 2026-11-27 · v2.2：接解析器（回待机 + 微动作不累计）
+
+### 三条规则落地
+
+**① 解析器能识别「回待机」**
+
+`llm/persona.py` 的 `INSTRUCTION_ACTS` 加了 8 个触发词：
+
+```
+回待机 / 回到待机 / 待机 / 站起来 / 站直 / 正常一点 / 恢复原样 / 别端着
+    → {"intent": "reset", "predicates": []}
+```
+
+`PARSE_SYSTEM` 也加了说明，LLM 解析时会输出 `intent: "reset"`。
+
+**② 微动作不累计**
+
+`PARSE_SYSTEM` 新增一节：
+
+> - 用户在**闲聊**，她话里带的小动作（尾巴甩一下 / 歪一下头 / 抿嘴 / 低头 / 耳朵动）
+>   → `intents` 给 `[]`，**不要**给 intent
+> - 只有**用户明确要求**做动作，或她**明确宣告**要做时，才给 intent
+> - 判断标准：**这个动作是不是这一轮的重点？** 是闲聊的调味 → `[]`
+
+**③ 心跳 30 秒算断开 / 状态丢失 = 断开**
+
+这是**宿主层的责任**（`blender_addon/body_live.py` 或外部驱动）：
+
+```python
+# 宿主侧伪代码
+if now - last_heartbeat > 30.0:
+    rt.reset_pose()        # 姿态清空（位置保留）
+    last_heartbeat = now
+```
+
+**core 侧只需要**：宿主调 `rt.reset_pose()` 即可。**core 不管心跳**。
+
+### 测试（`tests/test_reset_intent.py`，6 组全过）
+
+```
+[1] 指令表里有 8 个 reset 触发词          ✅
+[2] instruction_act 识别 5 种说法         ✅
+[3] reset 清空姿态 + 保留位置 x=1.5 y=-2.5 ✅
+[4] reset 后从 idle 出发                  ✅
+[5] PARSE_SYSTEM 有「微动作不累计」规则    ✅
+[6] 「回待机」不会匹配成 idle              ✅
+```
+
+**48 个测试全绿。**
+
+### 顺带
+
+`sandbox/library.json`（运行时库）加进 `.gitignore`——每次跑都变，不该进版本。
+
+---
+

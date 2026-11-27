@@ -28,3 +28,6 @@ desktop.ini
 
 # 历史代码备份
 .backup/
+
+# 运行时库（每次跑都变）
+sandbox/library.json
