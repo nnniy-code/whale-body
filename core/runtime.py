@@ -517,8 +517,18 @@ class Runtime:
         fam = self.families.get(family_name) or {}
         return body_speed(fam.get("G") or {})
 
-    def foot_target_for(self, family_name: str, start_feet: dict | None = None):
-        """按族名选脚目标源。没有步态的族返回 StaticTarget（站着不动）。"""
+    def foot_target_for(self, family_name: str, start_feet: dict | None = None,
+                        use_hold: bool = True):
+        """按族名选脚目标源。没有步态的族返回 StaticTarget（站着不动）。
+
+        **v2.3 关键**：`use_hold=True` 且当前有保持的腿状态时，**优先用保持的
+        `hip_drop` / `lift`**，而不是族自己的。
+
+        不这样的话：「蹲下」→ `hip_drop=0.20`，「手举起来」→ `wave` 族的
+        `hip_drop=0` → **整个人站起来了**。用户 2026-11-28 报的 bug。
+
+        走路类动作例外：它有真实步态，腿必须按步态驱动，不能继承蹲姿。
+        """
         from core.foot_target import GaitTarget, StaticTarget
         fam = self.families.get(family_name) or {}
         G = fam.get("G") or {}
@@ -527,11 +537,21 @@ class Runtime:
             M0 = self.rig_fast.compute({n: np.eye(4) for n in self.rig_fast.names})
             start_feet = {s: [float(M0[f"{s}Foot"][0, 3]), float(M0[f"{s}Foot"][1, 3]), 0.0]
                           for s in ("left", "right")}
+
+        # ① 有步态 → 步态驱动（不继承蹲姿）
         if abs(stride) > 1e-6:
             return GaitTarget(G, start_feet), start_feet
-        # 站桩族也可以声明髋要降多少（坐下 / 跪 / 蹲）。
-        # v1.9 之前这个值没人读，所以 sit 族看起来和站着一样。
-        # `lift` 让某只脚抬起来（单腿站 / 抬腿），值是脚底离地米数。
+
+        # ② 保持模式：腿的状态用当前保持的，不用族自己的
+        if use_hold and getattr(self, "body", None) is not None:
+            body = self.body
+            held_drop = float(getattr(body, "hip_drop_hold", 0.0) or 0.0)
+            held_lift = getattr(body, "lift_hold", None) or None
+            if held_drop > 1e-6 or held_lift:
+                return StaticTarget(start_feet, hip_drop=held_drop,
+                                    lift=dict(held_lift) if held_lift else None), start_feet
+
+        # ③ 默认：用族自己的配置
         return StaticTarget(start_feet,
                             hip_drop=float(G.get("hip_drop", 0.0)),
                             lift=G.get("lift") or None), start_feet
@@ -648,14 +668,22 @@ class Runtime:
         """播完之后：记住终点 P（**含腿的状态**），下次从这里出发。
 
         v2.1：默认保持——不说「回待机」就一直保持这个姿势。
+        v2.3：**从族名读 leg 配置**，不再依赖 `self.foot_target`
+              （`plan_trajectory` 不调 `build_full`，那个字段可能是旧的）。
         """
-        if tr.get("play_P"):
-            self._last_P = dict(tr["play_P"])
-            hip_drop = 0.0
-            if self.foot_target is not None:
-                hip_drop = float(self.foot_target.hip_drop())
-            self.body.hold_pose(tr["play_P"], hip_drop,
-                                getattr(self.body, "foot_source_hold", "static"))
+        if not tr.get("play_P"):
+            return
+        self._last_P = dict(tr["play_P"])
+        fam = self.families.get(tr.get("intent") or "") or {}
+        G = fam.get("G") or {}
+        hip_drop = float(G.get("hip_drop", 0.0))
+        lift = dict(G.get("lift") or {})
+        # 保持模式：族没声明腿状态时，**继承当前的**（蹲着做上半身动作不站起）
+        if self.body.has_pose() and hip_drop <= 1e-6 and not lift:
+            hip_drop = float(self.body.hip_drop_hold)
+            lift = dict(getattr(self.body, "lift_hold", {}) or {})
+        self.body.hold_pose(tr["play_P"], hip_drop, lift,
+                            getattr(self.body, "foot_source_hold", "static"))
 
     def reset_pose(self) -> None:
         """回到待机：清空姿态，**保留位置**。"""

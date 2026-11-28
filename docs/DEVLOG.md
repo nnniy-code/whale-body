@@ -3684,3 +3684,74 @@ if now - last_heartbeat > 30.0:
 
 ---
 
+
+## 2026-11-28 · 修「蹲下后举手整个人站起来」
+
+### 用户报的
+
+> 「为什么我让她蹲下之后手举起来还是整个人都起来了
+>  是要我和她说在现在的姿势的基础上吗」
+
+**不需要说**，这本来就该自动。
+
+### 根因
+
+```
+plan_trajectory: P_start = body.P_hold          ← 上半身接住了 ✅
+build_full:      foot_target_for("wave")        ← 腿按 wave 族重算 ❌
+                 wave 的 G.hip_drop = 0
+                 → 腿回到站姿
+```
+
+**`P_hold` 只保住上半身，腿被族名重新决定了。**
+
+而且 `commit_trajectory` 里的 `self.foot_target` 也不可靠——
+`plan_trajectory` 不调 `build_full`，那个字段可能是上一轮的旧值。
+
+### 修
+
+**① `foot_target_for` 加保持模式**
+
+```python
+if use_hold and self.body.hip_drop_hold > 1e-6:
+    return StaticTarget(start_feet,
+                        hip_drop=self.body.hip_drop_hold,
+                        lift=self.body.lift_hold), start_feet
+```
+
+**走路例外**：有步态的族不能继承蹲姿（腿必须按步态驱动）。
+
+**② `commit_trajectory` 从族名读 leg 配置**
+
+```python
+fam = self.families.get(tr.get("intent") or "") or {}
+G = fam.get("G") or {}
+hip_drop = float(G.get("hip_drop", 0.0))
+# 族没声明 → 继承当前的
+if self.body.has_pose() and hip_drop <= 1e-6:
+    hip_drop = self.body.hip_drop_hold
+```
+
+**③ `BodyState` 加 `lift_hold`**
+
+蹲/坐用 `hip_drop`，抬腿/单脚站用 `lift`，两个都要保持。
+
+### 实测（`tests/test_hold_leg.py`，5 组全过）
+
+```
+[1] 蹲下 → hip_drop=0.200                      ✅
+[2] 蹲着举手 → hip_drop 还是 0.200              ✅
+[3] 举手时髋 z=0.329（站立是 0.529）            ✅
+[4] 回待机 → hip_drop=0                        ✅
+[5] 走路不继承蹲姿（用 GaitTarget）             ✅
+```
+
+**49 个测试全绿。**
+
+### 教训
+
+**「保持」不是只保持一个 P。** 身体是分层的（上半身 P + 腿 hip_drop/lift + 位置），
+每一层都要保持，只保一层就会出现「上半身蹲着、腿站起来」这种撕裂。
+
+---
+

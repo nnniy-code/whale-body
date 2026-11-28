@@ -37,6 +37,7 @@ class BodyState:
     # ---- 姿态保持（v2.1）----
     P_hold: dict = field(default_factory=dict)   # 上半身 12 维
     hip_drop_hold: float = 0.0                    # 腿：髋降
+    lift_hold: dict = field(default_factory=dict)  # 腿：单脚抬高（side → 米）
     foot_source_hold: str = "static"              # 腿：脚目标源
 
     # 步态参数（由动作设置，默认走路）
@@ -76,14 +77,24 @@ class BodyState:
         """
         self.P_hold = {}
         self.hip_drop_hold = 0.0
+        self.lift_hold = {}
         self.foot_source_hold = "static"
 
     # ---- 姿态保持 ----
     def hold_pose(self, P: dict, hip_drop: float = 0.0,
+                  lift: dict | str | None = None,
                   foot_source: str = "static") -> None:
-        """记下要保持的姿态。"""
+        """记下要保持的姿态（含腿的 hip_drop / lift）。
+
+        **兼容 v2.1 的旧调用**：第三个参数以前是 `foot_source`（字符串）。
+        现在改成 `lift`（字典）。传字符串时按旧的 `foot_source` 处理。
+        """
+        if isinstance(lift, str):
+            foot_source = lift
+            lift = None
         self.P_hold = dict(P or {})
         self.hip_drop_hold = float(hip_drop)
+        self.lift_hold = dict(lift or {})
         self.foot_source_hold = str(foot_source)
 
     def has_pose(self) -> bool:
