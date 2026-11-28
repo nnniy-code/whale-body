@@ -301,7 +301,13 @@ class Runtime:
             if not r.get("entry"):
                 bases.append(None)
                 continue
+            # side 优先从 entry.metrics，拿不到就从族的模板推断
             side = (r["entry"].metrics or {}).get("side")
+            if side is None:
+                _preds = (act.get("predicates")
+                          or (self.families.get(act.get("intent") or "") or {})
+                          .get("predicates_template") or [])
+                side = _infer_side(_preds)
             P = r.get("play_P") or r["entry"].params.get("P", {})
             bases.append(self.pose_for_from_P(P, act["intent"], side))
 
@@ -565,6 +571,9 @@ class Runtime:
         顺手传帧号或墙钟——相位会跳。
         """
         t = self._t if t is None else float(t)
+        # v2.4：没显式指定侧别时，用保持的 side（不然挥手会变双手举）
+        if active_side is None:
+            active_side = getattr(self.body, "side_hold", None)
         from core.assembly import build_full_body
         ft, feet = self.foot_target_for(family_name, start_feet)
         self.foot_target = ft
@@ -649,7 +658,13 @@ class Runtime:
         P_start = dict(start_P or self._last_P
                        or self.body.P_hold
                        or ((self.families.get("idle") or {}).get("P_default") or {}))
+        # side 优先从 entry.metrics，拿不到就从族的模板推断
         side = (r["entry"].metrics or {}).get("side")
+        if side is None:
+            _preds = (act.get("predicates")
+                      or (self.families.get(act.get("intent") or "") or {}).get("predicates_template")
+                      or [])
+            side = _infer_side(_preds)
 
         tr = solve_path(
             P_start, P_end, n_frames=n_frames, rig=self.rig_fast, bm=self.bm,
@@ -659,9 +674,12 @@ class Runtime:
             only=self.capsule_only,
         )
         tr["entry"] = r["entry"]
+        tr["side"] = side              # v2.4：commit_trajectory 要用
         tr["play_P"] = P_end
         tr["source"] = r.get("source")
         tr["intent"] = act.get("intent")
+        from core.explain import explain_trajectory
+        tr["message"] = explain_trajectory(tr)   # 用户可见的一句话
         return tr
 
     def commit_trajectory(self, tr: dict) -> None:
@@ -682,8 +700,13 @@ class Runtime:
         if self.body.has_pose() and hip_drop <= 1e-6 and not lift:
             hip_drop = float(self.body.hip_drop_hold)
             lift = dict(getattr(self.body, "lift_hold", {}) or {})
+        # v2.4：side 也要记住（不然「挥手」会变成「双手举」）
+        side = tr.get("side")
+        if side is None and tr.get("entry") is not None:
+            side = (tr["entry"].metrics or {}).get("side")
         self.body.hold_pose(tr["play_P"], hip_drop, lift,
-                            getattr(self.body, "foot_source_hold", "static"))
+                            getattr(self.body, "foot_source_hold", "static"),
+                            side=side)
 
     def reset_pose(self) -> None:
         """回到待机：清空姿态，**保留位置**。"""
@@ -709,6 +732,9 @@ class Runtime:
 
     def frame_for(self, entry) -> Frame:
         return make_frame(self.pose_for(entry), self.anchors_cfg)
+
+
+
 
 
 

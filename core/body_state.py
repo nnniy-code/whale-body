@@ -1,4 +1,4 @@
-"""core/body_state.py — 角色在世界里的移动状态 + 姿态保持（v2.1）。
+﻿"""core/body_state.py — 角色在世界里的移动状态 + 姿态保持（v2.1）。
 
 设计依据：DEVLOG 2026-11-25/27「D 的设计」「姿态保持」
 
@@ -39,6 +39,7 @@ class BodyState:
     hip_drop_hold: float = 0.0                    # 腿：髋降
     lift_hold: dict = field(default_factory=dict)  # 腿：单脚抬高（side → 米）
     foot_source_hold: str = "static"              # 腿：脚目标源
+    side_hold: str | None = None                  # 上半身：只驱动哪一侧（v2.4）
 
     # 步态参数（由动作设置，默认走路）
     stride: float = 0.5
@@ -79,11 +80,13 @@ class BodyState:
         self.hip_drop_hold = 0.0
         self.lift_hold = {}
         self.foot_source_hold = "static"
+        self.side_hold = None
 
     # ---- 姿态保持 ----
     def hold_pose(self, P: dict, hip_drop: float = 0.0,
                   lift: dict | str | None = None,
-                  foot_source: str = "static") -> None:
+                  foot_source: str = "static",
+                  side: str | None = None) -> None:
         """记下要保持的姿态（含腿的 hip_drop / lift）。
 
         **兼容 v2.1 的旧调用**：第三个参数以前是 `foot_source`（字符串）。
@@ -96,6 +99,7 @@ class BodyState:
         self.hip_drop_hold = float(hip_drop)
         self.lift_hold = dict(lift or {})
         self.foot_source_hold = str(foot_source)
+        self.side_hold = side
 
     def has_pose(self) -> bool:
         return bool(self.P_hold)
@@ -103,7 +107,8 @@ class BodyState:
     def pose_dict(self) -> dict:
         return {"P_hold": len(self.P_hold),
                 "hip_drop_hold": round(self.hip_drop_hold, 3),
-                "foot_source_hold": self.foot_source_hold}
+                "foot_source_hold": self.foot_source_hold,
+                "side_hold": self.side_hold}
 
     # ---- 工具 ----
     def offset(self) -> tuple[float, float, float]:
@@ -124,3 +129,4 @@ class BodyState:
         return (f"BodyState(x={self.x:.3f}, y={self.y:.3f}, yaw={self.yaw:.1f}, "
                 f"bob={self.bob:.4f}, vel={self.vel:.2f}, "
                 f"pose={'有' if self.has_pose() else '无'})")
+
